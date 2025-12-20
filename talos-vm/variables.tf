@@ -1,3 +1,17 @@
+variable "boot_disk" {
+  type = object({
+    cache_mode   = optional(string, "none")
+    size         = optional(number, null)
+    ssd          = optional(bool, false)
+    storage_pool = string
+  })
+  description = "The configuration for the VM's boot disk."
+  validation {
+    condition     = contains(["none", "directsync", "writethrough", "writeback", "unsafe"], var.boot_disk.cache_mode)
+    error_message = "'disk_cache_mode' must be one of: none, directsync, writethrough, writeback or unsafe"
+  }
+}
+
 variable "cluster_role" {
   type        = string
   description = "The role of the node within the Talos cluster."
@@ -29,26 +43,11 @@ variable "dhcp" {
   default = null
 }
 
-variable "disk_cache_mode" {
-  type        = string
-  description = "The caching mode to use when writing to disk."
-  validation {
-    condition     = contains(["none", "directsync", "writethrough", "writeback", "unsafe"], var.disk_cache_mode)
-    error_message = "'disk_cache_mode' must be one of: none, directsync, writethrough, writeback or unsafe"
-  }
-  default = "none"
-}
-
-variable "disk_size" {
-  type        = number
-  description = "The size of the root disk (in GB) for the VM. If null, uses defaults based on the cluster role."
-  default     = null
-}
-
 variable "extra_disks" {
   type = map(object({
     cache_mode   = optional(string, "none")
     size         = number
+    ssd          = optional(bool, false)
     storage_pool = string
   }))
   validation {
@@ -89,11 +88,6 @@ variable "proxmox_pool" {
   type        = string
   description = "The name of the Proxmox pool in which to place the VM."
   default     = null
-}
-
-variable "storage_pool" {
-  type        = string
-  description = "The storage pool in which to place the template's disk(s)."
 }
 
 variable "talos_iso_file_id" {

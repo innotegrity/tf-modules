@@ -51,7 +51,7 @@ _<u>Optional Values</u>_
 
 | Variable | Type | Description | Default |
 | --- | --- | --- | --- |
-| `cluster_sans` | `list(string)` | A list of additional hostnames or IPs to add to the API server SSL certificate in addition to the default hostnames and IPs  | `[]` |
+| `cluster_sans` | `list(string)` | A list of additional hostnames or IPs to add to the API server SSL certificate in addition to the default hostnames and IPs | `[]` |
 | `cluster_vip` | `string` | Virtual IP to use for the main cluster endpoint; if `null` then no VIP is allocated | `null` |
 | `dns` | [DNSObject](#dnsobject-type) | DNS configuration for registering cluster SANs to the `cluster_vip` or `null` to disable DNS registration ; if `cluster_vip` is not provided or `cluster_sans` is empty then this value is ignored | `null` |
 | `oidc_config` | [OIDCConfigObject](#oidcconfigobject-type) | OIDC configuration for authentication or `null` to disable OIDC authentication | `null` |

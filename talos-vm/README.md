@@ -50,7 +50,7 @@ _<u>Optional Values</u>_
 | --- | --- | --- | --- |
 | `cluster_role` | `string` | The role of the node within the Talos cluster ; must be one of: `control-plane` or `worker` | `worker` |
 | `cpu_cores` | `number` | The number of CPU cores to allocate to the VM | `4` for control plane nodes and `8` for worker nodes |
-| `dhcp` | [DHCPObject](#dhcpobject-type) | DHCP reservation settings for the VM or `null` to disable DHCP reservation| `null`|
+| `dhcp` | [DHCPObject](#dhcpobject-type) | DHCP reservation settings for the VM or `null` to disable DHCP reservation | `null` |
 | `disk_cache_mode` | `string` | Cache mode of the root disk - must be one of the following: `none`,`directsync`, `writethrough`, `writeback`, or `unsafe` | `none` |
 | `disk_size` | `number` | Size of the root disk in GB | `50` for control plane nodes and `100` for worker nodes |
 | `extra_disks` | `map(`[DiskObject](#diskobject-type)`)` | Extra disks to add to the VM with the device name (eg: `scsi1` ) as the map key | `{}` |
@@ -105,4 +105,4 @@ _<u>Optional Values</u>_
 
 | Variable | Type | Description | Default |
 | --- | --- | --- | --- |
-| `cache_mode` | `string` | Cache mode of the disk - must be one of the following: `none`,`directsync`, `writethrough`, `writeback`, or `unsafe`  | `none` |
+| `cache_mode` | `string` | Cache mode of the disk - must be one of the following: `none`,`directsync`, `writethrough`, `writeback`, or `unsafe` | `none` |

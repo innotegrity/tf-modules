@@ -8,6 +8,8 @@
 - [✅ Provider Requirements](#-provider-requirements)
 - [➡️ Inputs](#️-inputs)
 - [⬅️ Outputs](#️-outputs)
+- [📖 Custom Object Definitions](#-custom-object-definitions)
+  - [StorageClassObject Type](#storageclassobject-type)
 
 ## 👁️ Overview
 
@@ -17,7 +19,8 @@ This module enables the CSI driver for Proxmox which automatically provisions an
 
 The following Terraform providers are required for this module:
 
-- `bpg/proxmox` ~> 0.89
+- `hashicorp/helm` ~> 3.1
+- `hashicorp/kubernetes` ~> 3.0
 
 ## ➡️ Inputs
 
@@ -27,21 +30,45 @@ The input variables for this module are defined below.
 
 | Variable | Type | Description |
 | --- | --- | --- |
-| `csi_password` | `string` | The pasword for the Proxmox user to create |
+| `csi_token_id` | `string` | The ID of the Proxmox token which is used by the CSI driver to (de)provision volumes |
+| `csi_token_secret` | `string` | The corresponding secret value of the Proxmox token which is used by the CSI driver to (de)provision volumes |
+| `proxmox_cluster` | `string` | The name of the Proxmox cluster |
+| `proxmox_host` | `string` | The hostname of the Proxmox API server |
 
 _<u>Optional Values</u>_
 
 | Variable | Type | Description | Default |
 | --- | --- | --- | --- |
-| `csi_role_name` | `string` | The name of the role to create for the Proxmox CSI driver | `KubernetesCSI` |
-| `csi_token_name` | `string` | The name of the token to generate for the Proxmox user | `csi` |
-| `csi_username` | `string` | The name of the Proxmox user to create along with the domain (eg: `user@domain`) | `kubernetes-csi@pve` |
+| `create_namespace` | `bool` | Whether or not to create a dedicated namespace for the CSI driver resources ; if `false`, the `kube-system` namespace will be used | `false` |
+| `namespace` | `string` | If `create_namespace` is `true`, the name of the namespace to create for the CSI driver resources | `proxmox-csi` |
+| `proxmox_port` | `number` | The port on which the Proxmox API is listening | `8006` |
+| `proxmox_skip_verify_tls` | `bool` | Whether or not to skip the process of validating the certificate used by the Proxmox API server | `false` |
+| `storage_classess` | `list(`[StorageClassObject](#storageclassobject-type)`)` | List of storage classes to create automatically during installation | `[]` |
 
 ## ⬅️ Outputs
 
-This module produces the following outputs:
+This module produces no outputs.
+
+## 📖 Custom Object Definitions
+
+### StorageClassObject Type
+
+This is an input object used to define the storage classes to automatically create upon installation of the CSI driver.
+
+**<u>Required Values</u>**
 
 | Variable | Type | Description |
 | --- | --- | --- |
-| `csi_token_id` | `string` | The ID of the token to use with the Proxmox CSI driver |
-| `csi_token_secret` | `string` | The secret of the token to use with the Proxmox CSI driver |
+| `name` | `string` | The name of storage class |
+| `storage_pool` | `string` | The name of the storage device in Proxmox where volumes will be (de)provisioned |
+
+_<u>Optional Values</u>_
+
+| Variable | Type | Description | Default |
+| --- | --- | --- | --- |
+| `cache_mode` | `string` | The cache mode of the underlying disk ; must be `none`, `directsync`, `writeback` or `writethrough` | `none` |
+| `fs_type` | `string` | The format of the filesystem to create ; must be `ext4` or `xfs` | `ext4` |
+| `reclaim_policy` | `string` | The reclaim policy for the storage class ; must be `Delete` or `Retain` | `Delete` |
+| `ssd` | `bool` | Whether or not to treat the volume as being on an SSD | `false` |
+| `extra_parameters` | `map(string)` | Any additional parameters to pass to the storage class | `{}` |
+| `mount_options` | `list(string)` | Any mount options to pass to the storage class | `[]` |

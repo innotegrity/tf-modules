@@ -1,6 +1,8 @@
 resource "kubernetes_namespace_v1" "proxmox_csi" {
+  count = var.create_namespace ? 1 : 0
+
   metadata {
-    name = "proxmox-csi"
+    name = local.namespace
 
     labels = {
       "pod-security.kubernetes.io/enforce" = "privileged"
@@ -16,7 +18,7 @@ resource "helm_release" "proxmox_csi" {
   atomic           = true
   cleanup_on_fail  = true
   create_namespace = false
-  namespace        = kubernetes_namespace_v1.proxmox_csi.metadata[0].name
+  namespace        = var.create_namespace ? kubernetes_namespace_v1.proxmox_csi[0].metadata[0].name : local.namespace
 
   version = "0.5.3"
 

@@ -1,3 +1,9 @@
+variable "create_namespace" {
+  type        = bool
+  description = "Whether or not to create a dedicated namespace for the CSI driver resources."
+  default     = false
+}
+
 variable "csi_token_id" {
   type        = string
   description = "The ID of the Proxmox token for the CSI driver to use."
@@ -6,6 +12,16 @@ variable "csi_token_id" {
 variable "csi_token_secret" {
   type        = string
   description = "The secret value of the Proxmox token for the CSI driver to use."
+}
+
+variable "namespace" {
+  type        = string
+  description = "The name of the namespace to create for the CSI driver resources."
+  default     = "proxmox-csi"
+  validation {
+    condition     = var.create_namespace ? length(var.namespace) > 0 : true
+    error_message = "A namespace is required when 'create_namespace' is true."
+  }
 }
 
 variable "proxmox_cluster" {
