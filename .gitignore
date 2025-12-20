@@ -1,0 +1,8 @@
+# OS artifacts
+.DS_Store
+Thumbs.db
+
+# Terraform/OpenTofu artifacts
+.terraform/
+*.tfstate
+*.tfstate.backup

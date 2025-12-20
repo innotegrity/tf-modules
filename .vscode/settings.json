@@ -1,0 +1,10 @@
+{
+    "files.associations": {
+        "*.tf.hcl": "opentofu",
+        "*.tfvars.hcl": "opentofu",
+    },
+    "[opentofu]": {
+        "editor.defaultFormatter": "opentofu.vscode-opentofu",
+    },
+    "editor.formatOnSave": true
+}

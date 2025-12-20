@@ -1,0 +1,80 @@
+data "talos_client_configuration" "this" {
+  cluster_name         = var.cluster_name
+  client_configuration = var.client_configuration
+  nodes                = concat(var.control_plane_nodes, var.worker_nodes)
+  endpoints            = var.endpoints
+}
+
+resource "helm_release" "cilium_cni" {
+  repository = "https://helm.cilium.io"
+  chart      = "cilium"
+  name       = "cilium-cni"
+
+  atomic           = true
+  cleanup_on_fail  = true
+  create_namespace = true
+  namespace        = "kube-system"
+  version          = "1.18.4"
+
+  set = [
+    {
+      name  = "ipam.mode"
+      value = "kubernetes"
+    },
+    {
+      name  = "kubeProxyReplacement"
+      value = true
+    },
+    {
+      name  = "securityContext.capabilities.ciliumAgent"
+      value = "{CHOWN,KILL,NET_ADMIN,NET_RAW,IPC_LOCK,SYS_ADMIN,SYS_RESOURCE,DAC_OVERRIDE,FOWNER,SETGID,SETUID}"
+    },
+    {
+      name  = "securityContext.capabilities.cleanCiliumState"
+      value = "{NET_ADMIN,SYS_ADMIN,SYS_RESOURCE}"
+    },
+    {
+      name  = "cgroup.autoMount.enabled"
+      value = false
+    },
+    {
+      name  = "cgroup.hostRoot"
+      value = "/sys/fs/cgroup"
+    },
+    {
+      name  = "k8sServiceHost"
+      value = "localhost"
+    },
+    {
+      name  = "k8sServicePort"
+      value = 7445
+    },
+    {
+      name  = "gatewayAPI.enabled"
+      value = true
+    },
+    {
+      name  = "gatewayAPI.enableAlpn"
+      value = true
+    },
+    {
+      name  = "gatewayAPI.enableAppProtocol"
+      value = true
+    }
+  ]
+}
+
+data "talos_cluster_health" "this" {
+  depends_on = [
+    helm_release.cilium_cni
+  ]
+
+  client_configuration   = data.talos_client_configuration.this.client_configuration
+  control_plane_nodes    = var.control_plane_nodes
+  worker_nodes           = var.worker_nodes
+  endpoints              = var.endpoints
+  skip_kubernetes_checks = true
+  timeouts = {
+    read = "5m"
+  }
+}
