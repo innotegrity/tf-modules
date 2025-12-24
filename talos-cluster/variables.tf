@@ -25,7 +25,7 @@ variable "control_plane_nodes" {
       name        = string
       device_name = string
       format      = optional(string, "ext4")
-    })), [])
+    })), {})
   }))
   description = "A map of control plane nodes for the cluster."
   validation {
@@ -83,7 +83,7 @@ variable "worker_nodes" {
       name        = string
       device_name = string
       format      = optional(string, "ext4")
-    })), [])
+    })), {})
   }))
   description = "A map of worker nodes for the cluster."
   validation {
