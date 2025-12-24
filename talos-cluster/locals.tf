@@ -127,8 +127,10 @@ locals {
         name       = "${disk.name}"
         provisioning = {
           diskSelector = {
-            match = "disk.dev == \"${disk.device_name}\""
+            match = "disk.dev_path == \"${disk.device_name}\""
           }
+          minSize = "${disk.size}GB"
+          maxSize = "${disk.size}GB"
         }
         filesystem = {
           type = "${disk.format}"
