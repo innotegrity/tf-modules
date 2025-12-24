@@ -1,4 +1,3 @@
-/*
 output "vm_id" {
   description = "The ID of the newly created virtual machine."
   value       = proxmox_virtual_environment_vm.talos_node.id
@@ -13,4 +12,4 @@ output "mac_address" {
   description = "The MAC address of the virtual machine."
   value       = proxmox_virtual_environment_vm.talos_node.mac_addresses[0]
 }
-*/
+

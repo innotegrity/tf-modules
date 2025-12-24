@@ -22,9 +22,9 @@ variable "control_plane_nodes" {
     ip_address  = string
     labels      = optional(map(string), {})
     extra_disks = optional(map(object({
-      name        = string
       device_name = string
       format      = optional(string, "ext4")
+      name        = string
       size        = number
     })), {})
   }))
@@ -81,9 +81,9 @@ variable "worker_nodes" {
     ip_address  = string
     labels      = optional(map(string), {})
     extra_disks = optional(map(object({
-      name        = string
       device_name = string
       format      = optional(string, "ext4")
+      name        = string
       size        = number
     })), {})
   }))

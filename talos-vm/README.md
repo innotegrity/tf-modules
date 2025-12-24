@@ -106,3 +106,4 @@ _<u>Optional Values</u>_
 | Variable | Type | Description | Default |
 | --- | --- | --- | --- |
 | `cache_mode` | `string` | Cache mode of the disk - must be one of the following: `none`,`directsync`, `writethrough`, `writeback`, or `unsafe` | `none` |
+| `ssd` | `bool` | Whether or not to treat the disk as an SSD | `false` |

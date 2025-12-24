@@ -9,6 +9,7 @@
 - [➡️ Inputs](#️-inputs)
 - [⬅️ Outputs](#️-outputs)
 - [📖 Custom Object Definitions](#-custom-object-definitions)
+  - [DiskObject Type](#diskobject-type)
   - [DNSObject Type](#dnsobject-type)
   - [KubernetesConfigObject Type](#kubernetesconfigobject-type)
   - [NodeObject Type](#nodeobject-type)
@@ -69,6 +70,24 @@ This module produces the following outputs:
 
 ## 📖 Custom Object Definitions
 
+### DiskObject Type
+
+This is an input object used to define the configuration for an extra disk to format on the Talos node.
+
+**<u>Required Values</u>**
+
+| Variable | Type | Description |
+| --- | --- | --- |
+| `device_name` | `string` | The name/path of the disk device (eg: `/dev/sdb`) |
+| `name` | `string` | The name of the folder under `/var/mnt` where the extra disk will be mounted |
+| `size` | `number` | The size of the disk in GB |
+
+_<u>Optional Values</u>_
+
+| Variable | Type | Description | Default |
+| --- | --- | --- | --- |
+| `format` | `string` | Format of the underlying filesystem - must be one of the following: `ext4` or `xfs` | `ext4` |
+
 ### DNSObject Type
 
 This is an input object used to define the configuration for automatic cluster SAN name to cluster VIP registration in DNS.
@@ -106,6 +125,7 @@ _<u>Optional Values</u>_
 | Variable | Type | Description | Default |
 | --- | --- | --- | --- |
 | `annotations` | `map(string)` | Extra annotations to add to the cluster node | `{}` |
+| `extra_disks` | `map(`[DiskObject Type](#diskobject-type)`)` | Extra disks to mount and format on the node ; the key for the map is ignored | `{}` |
 | `labels` | `map(string)` | Extra labels to add to the cluster node | `{}` |
 
 ### OIDCConfigObject Type
