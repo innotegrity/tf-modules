@@ -4,95 +4,6 @@ resource "macaddress" "talos_node" {
   prefix = var.dhcp.mac_address_prefix
 }
 
-resource "proxmox_vm_qemu" "talos_node" {
-  name = var.hostname
-
-  agent              = 1
-  balloon            = local.memory
-  bios               = "ovmf"
-  boot               = "order=scsi0;sata0"
-  description        = local.vm_description
-  memory             = local.memory
-  pool               = var.proxmox_pool
-  qemu_os            = "l26"
-  scsihw             = "virtio-scsi-single"
-  start_at_node_boot = true
-  tags               = local.vm_tags
-  target_node        = var.proxmox_node
-  vmid               = var.vm_id
-
-  cpu {
-    cores = local.cpu_cores
-    type  = "host"
-  }
-
-  disk {
-    slot = "scsi0"
-
-    cache      = var.boot_disk.cache_mode
-    discard    = true
-    emulatessd = var.boot_disk.ssd
-    format     = "raw"
-    iothread   = true
-    replicate  = false
-    size       = local.disk_size
-    storage    = var.boot_disk.storage_pool
-    type       = "disk"
-  }
-
-  disk {
-    slot = "sata0"
-
-    iso  = var.talos_iso_file_id
-    type = "cdrom"
-  }
-
-  dynamic "disk" {
-    for_each = var.extra_disks
-    content {
-      slot = disk.key
-
-      cache      = disk.value.cache_mode
-      discard    = true
-      emulatessd = disk.value.ssd
-      format     = "raw"
-      iothread   = true
-      replicate  = false
-      size       = disk.value.size
-      storage    = disk.value.storage_pool
-      type       = "disk"
-    }
-  }
-
-  efidisk {
-    efitype           = "4m"
-    pre_enrolled_keys = false
-    storage           = var.boot_disk.storage_pool
-  }
-
-  network {
-    id      = 0
-    bridge  = var.network_bridge
-    macaddr = local.mac_address
-    model   = "virtio"
-  }
-
-  smbios {
-    serial = "h=${var.proxmox_node};i=${var.vm_id}"
-  }
-
-  tpm_state {
-    storage = var.boot_disk.storage_pool
-    version = "v2.0"
-  }
-
-  vga {
-    memory = 256
-    type   = "virtio"
-  }
-}
-
-/*
 resource "proxmox_virtual_environment_vm" "talos_node" {
   node_name = var.proxmox_node
 
@@ -123,8 +34,8 @@ resource "proxmox_virtual_environment_vm" "talos_node" {
 
 
   disk {
-    cache        = var.disk_cache_mode
-    datastore_id = var.storage_pool
+    cache        = var.boot_disk.cache_mode
+    datastore_id = var.boot_disk.storage_pool
     discard      = "on"
     file_format  = "raw"
     interface    = "scsi0"
@@ -150,7 +61,7 @@ resource "proxmox_virtual_environment_vm" "talos_node" {
   }
 
   efi_disk {
-    datastore_id      = var.storage_pool
+    datastore_id      = var.boot_disk.storage_pool
     file_format       = "raw"
     type              = "4m"
     pre_enrolled_keys = false
@@ -175,7 +86,7 @@ resource "proxmox_virtual_environment_vm" "talos_node" {
   }
 
   tpm_state {
-    datastore_id = var.storage_pool
+    datastore_id = var.boot_disk.storage_pool
     version      = "v2.0"
   }
 
@@ -199,4 +110,3 @@ resource "proxmox_virtual_environment_pool_membership" "talos_node" {
   vm_id   = proxmox_virtual_environment_vm.talos_node.id
   pool_id = var.proxmox_pool
 }
-*/

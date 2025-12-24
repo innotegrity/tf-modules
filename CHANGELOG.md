@@ -4,6 +4,6 @@
 
 No unreleased changes
 
-## v0.1.0 (Released 2025-12-19)
+## v0.1.0 (Released 2025-12-??)
 
 * Initial release of the module
