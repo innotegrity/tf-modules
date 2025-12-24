@@ -102,11 +102,12 @@ locals {
     }
   })
 
+
   # config for nodes
   control_plane_nodes = { for node, config in var.control_plane_nodes : node => {
     ip_address = config.ip_address
     hostname   = config.hostname
-    patches = [
+    patches = flatten([
       local.vip_patch,
       local.dns_forwarding_patch,
       local.install_image_patch,
@@ -119,14 +120,27 @@ locals {
           nodeAnnotations = { for annotation, value in coalesce(config.annotations, {}) : annotation => value }
           nodeLabels      = { for label, value in coalesce(config.labels, {}) : label => value }
         }
-      })
-    ]
+      }),
+      [for bus, disk in config.extra_disks : yamlencode({
+        apiVersion = "v1alpha1"
+        kind       = "UserVolumeConfig"
+        name       = "${disk.name}"
+        provisioning = {
+          diskSelector = {
+            match = "disk.dev == \"${disk.device_name}\""
+          }
+        }
+        filesystem = {
+          type = "${disk.format}"
+        }
+      })]
+    ])
   } }
 
   worker_nodes = { for node, config in var.worker_nodes : node => {
     ip_address = config.ip_address
     hostname   = config.hostname
-    patches = [
+    patches = flatten([
       local.dns_forwarding_patch,
       local.install_image_patch,
       local.hostname_patch[node],
@@ -137,7 +151,20 @@ locals {
           nodeAnnotations = { for annotation, value in coalesce(config.annotations, {}) : annotation => value }
           nodeLabels      = { for label, value in coalesce(config.labels, {}) : label => value }
         }
-      })
-    ]
+      }),
+      [for bus, disk in config.extra_disks : yamlencode({
+        apiVersion = "v1alpha1"
+        kind       = "UserVolumeConfig"
+        name       = "${disk.name}"
+        provisioning = {
+          diskSelector = {
+            match = "disk.dev == \"${disk.device_name}\""
+          }
+        }
+        filesystem = {
+          type = "${disk.format}"
+        }
+      })]
+    ])
   } }
 }

@@ -21,6 +21,11 @@ variable "control_plane_nodes" {
     hostname    = string
     ip_address  = string
     labels      = optional(map(string), {})
+    extra_disks = optional(map(object({
+      name        = string
+      device_name = string
+      format      = optional(string, "ext4")
+    })), [])
   }))
   description = "A map of control plane nodes for the cluster."
   validation {
@@ -74,6 +79,11 @@ variable "worker_nodes" {
     hostname    = string
     ip_address  = string
     labels      = optional(map(string), {})
+    extra_disks = optional(map(object({
+      name        = string
+      device_name = string
+      format      = optional(string, "ext4")
+    })), [])
   }))
   description = "A map of worker nodes for the cluster."
   validation {
