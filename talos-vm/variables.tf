@@ -94,7 +94,7 @@ variable "longhorn_disk" {
     error_message = "'storage_pool' is required when 'enable_longhorn' is true"
   }
   validation {
-    condition     = contains(["none", "directsync", "writethrough", "writeback", "unsafe"], var.longhorn_disk.cache_mode)
+    condition     = var.enable_longhorn ? contains(["none", "directsync", "writethrough", "writeback", "unsafe"], var.longhorn_disk.cache_mode) : true
     error_message = "'disk_cache_mode' must be one of: none, directsync, writethrough, writeback or unsafe"
   }
   default = null
