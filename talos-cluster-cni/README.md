@@ -10,6 +10,7 @@
 - [⬅️ Outputs](#️-outputs)
 - [📖 Custom Object Definitions](#-custom-object-definitions)
   - [ClientConfigurationObject Type](#clientconfigurationobject-type)
+  - [IPBlockObject Type](#ipblockobject-type)
 
 ## 👁️ Overview
 
@@ -33,6 +34,7 @@ The input variables for this module are defined below.
 | `cluster_name` | `string` | The name used for the Talos cluster |
 | `client_configuration` | [ClientConfigurationObject](#clientconfigurationobject-type) | Talos client configuration certificates and keys |
 | `control_plane_nodes` | `list(string)` | List of control plane IP addresses for the Talos cluster. Only when these nodes and the worker nodes return healthy will the module complete. |
+| `load_balancer_ip_blocks` | `list(`[IPBlockObject](#ipblockobject-type)`)` | A list of IP address blocks to use for `LoadBalancer` resources in the cluster |
 | `endpoints` | `list(string)` | List of IP addresses to use to check the cluster health. |
 | `worker_nodes` | `list(string)` | List of worker IP addresses for the Talos cluster. Only when these nodes and the control plane nodes return healthy will the module complete. |
 
@@ -53,3 +55,14 @@ This is an input object used to define the certificates and keys that must be us
 | `ca_certificate` | `string` | The CA certificate used to sign the client certificate |
 | `client_certificate` | `string` | The client certificate used to connect to the Talos cluster |
 | `client_key` | `string` | The client key used to connect to the Talos cluster |
+
+### IPBlockObject Type
+
+This is an input object used to define the start and end ranges of IP blocks for load balancers.
+
+**<u>Required Values</u>**
+
+| Variable | Type | Description |
+| --- | --- | --- |
+| `start` | `string` | The starting IP address of the block |
+| `stop` | `string` | The ending IP address of the block |

@@ -14,7 +14,7 @@ resource "helm_release" "cilium_cni" {
   cleanup_on_fail  = true
   create_namespace = true
   namespace        = "kube-system"
-  version          = "1.18.4"
+  version          = "1.18.5"
 
   set = [
     {
@@ -59,6 +59,34 @@ resource "helm_release" "cilium_cni" {
     },
     {
       name  = "gatewayAPI.enableAppProtocol"
+      value = true
+    },
+    {
+      name  = "gatewayAPI.gatewayClass.create"
+      value = true
+    },
+    {
+      name  = "l2announcements.enabled"
+      value = true
+    },
+    {
+      name  = "k8sClientRateLimit.qps"
+      value = 50
+    },
+    {
+      name  = "k8sClientRateLimit.burst"
+      value = 200
+    },
+    {
+      name  = "operator.rollOutPods"
+      value = true
+    },
+    {
+      name  = "rollOutCiliumPods"
+      value = true
+    },
+    {
+      name  = "ingressController.enabled"
       value = true
     }
   ]
