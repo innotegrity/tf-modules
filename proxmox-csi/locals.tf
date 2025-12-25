@@ -1,6 +1,4 @@
 locals {
-  namespace = var.create_namespace ? var.namespace : "kube-system"
-
   cluster_configs = [{
     url          = "https://${var.proxmox_host}:${var.proxmox_port}/api2/json"
     insecure     = var.proxmox_skip_verify_tls

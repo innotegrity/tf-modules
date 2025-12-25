@@ -39,8 +39,7 @@ _<u>Optional Values</u>_
 
 | Variable | Type | Description | Default |
 | --- | --- | --- | --- |
-| `create_namespace` | `bool` | Whether or not to create a dedicated namespace for the CSI driver resources ; if `false`, the `kube-system` namespace will be used | `false` |
-| `namespace` | `string` | If `create_namespace` is `true`, the name of the namespace to create for the CSI driver resources | `proxmox-csi` |
+| `namespace` | `string` | The name of the namespace to create for the CSI driver resources | `proxmox-csi` |
 | `proxmox_port` | `number` | The port on which the Proxmox API is listening | `8006` |
 | `proxmox_skip_verify_tls` | `bool` | Whether or not to skip the process of validating the certificate used by the Proxmox API server | `false` |
 | `storage_classess` | `list(`[StorageClassObject](#storageclassobject-type)`)` | List of storage classes to create automatically during installation | `[]` |
