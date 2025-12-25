@@ -43,20 +43,33 @@ variable "dhcp" {
   default = null
 }
 
+variable "enable_longhorn" {
+  type        = bool
+  description = "Whether or not to enable this VM as a Longhorn storage node."
+  default     = false
+}
+
 variable "extra_disks" {
-  type = map(object({
+  type = list(object({
     cache_mode   = optional(string, "none")
+    interface    = string
     size         = number
     ssd          = optional(bool, false)
     storage_pool = string
   }))
   validation {
     condition = alltrue([
-      for iface, obj in var.extra_disks : contains(["none", "directsync", "writethrough", "writeback", "unsafe"], obj.cache_mode)
+      for obj in var.extra_disks : contains(["none", "directsync", "writethrough", "writeback", "unsafe"], obj.cache_mode)
     ])
     error_message = "'cache_mode' must be one of: none, directsync, writethrough, writeback or unsafe"
   }
-  default = {}
+  validation {
+    condition = alltrue([
+      for obj in var.extra_disks : startswith(obj.interface, "scsi") && obj.interface != "scsi0" && var.enable_longhorn ? obj.interface != "scsi1" : true
+    ])
+    error_message = "'interface' must start with 'scsi' and may not be 'scsi0' or 'scsi1' (if 'enable_longhorn' is true)"
+  }
+  default = []
 }
 
 variable "hostname" {
@@ -66,6 +79,25 @@ variable "hostname" {
     condition     = length(var.hostname) > 0
     error_message = "'hostname' must be a non-empty string"
   }
+}
+
+variable "longhorn_disk" {
+  type = object({
+    cache_mode   = optional(string, "none")
+    size         = optional(number, 250)
+    ssd          = optional(bool, false)
+    storage_pool = optional(string, null)
+  })
+  description = "The configuration for the Longhorn storage disk -- ignored unless 'enable_longhorn' is true"
+  validation {
+    condition     = var.enable_longhorn ? var.longhorn_disk.storage_pool != null : true
+    error_message = "'storage_pool' is required when 'enable_longhorn' is true"
+  }
+  validation {
+    condition     = contains(["none", "directsync", "writethrough", "writeback", "unsafe"], var.boot_disk.cache_mode)
+    error_message = "'disk_cache_mode' must be one of: none, directsync, writethrough, writeback or unsafe"
+  }
+  default = null
 }
 
 variable "memory" {

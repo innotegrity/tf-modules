@@ -9,6 +9,14 @@ locals {
   register_dns_records = var.cluster_vip != null && var.dns != null && length(local.cluster_sans) > 0 ? true : false
 
   # config patches
+  node_patch = { for node, config in merge(var.control_plane_nodes, var.worker_nodes) : node =>
+    yamlencode({
+      machine = {
+        nodeAnnotations = { for annotation, value in coalesce(config.annotations, {}) : annotation => value }
+        nodeLabels      = { for label, value in coalesce(config.labels, {}) : label => value }
+      }
+    })
+  }
   hostname_patch = { for node, config in merge(var.control_plane_nodes, var.worker_nodes) : node =>
     yamlencode({
       machine = {
@@ -17,6 +25,38 @@ locals {
         }
       }
     })
+  }
+  longhorn_volume_patch = { for node, config in merge(var.control_plane_nodes, var.worker_nodes) : node =>
+    config.enable_longhorn ? yamlencode({
+      apiVersion = "v1alpha1"
+      kind       = "UserVolumeConfig"
+      name       = "longhorn"
+      provisioning = {
+        diskSelector = {
+          match = "disk.dev_path == \"/dev/sdb\" && !system_disk"
+        }
+        minSize = "1GiB"
+      }
+      filesystem = {
+        type = "ext4"
+      }
+    }) : ""
+  }
+  longhorn_kubectl_patch = { for node, config in merge(var.control_plane_nodes, var.worker_nodes) : node =>
+    config.enable_longhorn ? yamlencode({
+      machine = {
+        kubelet = {
+          extraMounts = [
+            {
+              destination = "/var/mnt/longhorn"
+              type        = "bind"
+              source      = "/var/mnt/longhorn"
+              options     = ["bind", "rshared", "rw"]
+            }
+          ]
+        }
+      }
+    }) : ""
   }
   vip_disabled_patch = yamlencode({
     machine = {
@@ -102,9 +142,8 @@ locals {
     }
   })
 
-
   # config for nodes
-  control_plane_nodes = { for node, config in var.control_plane_nodes : node => {
+  control_plane_node_configs = { for node, config in var.control_plane_nodes : node => {
     ip_address = config.ip_address
     hostname   = config.hostname
     patches = flatten([
@@ -115,60 +154,25 @@ locals {
       local.hostname_patch[node],
       local.kubeprism_patch,
       local.cilium_cni_patch,
-      yamlencode({
-        machine = {
-          nodeAnnotations = { for annotation, value in coalesce(config.annotations, {}) : annotation => value }
-          nodeLabels      = { for label, value in coalesce(config.labels, {}) : label => value }
-        }
-      }),
-      [for bus, disk in config.extra_disks : yamlencode({
-        apiVersion = "v1alpha1"
-        kind       = "UserVolumeConfig"
-        name       = "${disk.name}"
-        provisioning = {
-          diskSelector = {
-            match = "disk.dev_path == \"${disk.device_name}\""
-          }
-          minSize = "${disk.size}GB"
-          maxSize = "${disk.size}GB"
-        }
-        filesystem = {
-          type = "${disk.format}"
-        }
-      })]
+      local.node_patch[node],
+      local.longhorn_volume_patch[node],
+      local.longhorn_kubectl_patch[node],
     ])
   } }
-
-  worker_nodes = { for node, config in var.worker_nodes : node => {
+  worker_node_configs = { for node, config in var.worker_nodes : node => {
     ip_address = config.ip_address
     hostname   = config.hostname
     patches = flatten([
+      local.vip_patch,
       local.dns_forwarding_patch,
       local.install_image_patch,
+      local.oidc_patch,
       local.hostname_patch[node],
       local.kubeprism_patch,
       local.cilium_cni_patch,
-      yamlencode({
-        machine = {
-          nodeAnnotations = { for annotation, value in coalesce(config.annotations, {}) : annotation => value }
-          nodeLabels      = { for label, value in coalesce(config.labels, {}) : label => value }
-        }
-      }),
-      [for bus, disk in config.extra_disks : yamlencode({
-        apiVersion = "v1alpha1"
-        kind       = "UserVolumeConfig"
-        name       = "${disk.name}"
-        provisioning = {
-          diskSelector = {
-            match = "disk.dev_path == \"${disk.device_name}\""
-          }
-          minSize = "${disk.size}GB"
-          maxSize = "${disk.size}GB"
-        }
-        filesystem = {
-          type = "${disk.format}"
-        }
-      })]
+      local.node_patch[node],
+      local.longhorn_volume_patch[node],
+      local.longhorn_kubectl_patch[node],
     ])
   } }
 }

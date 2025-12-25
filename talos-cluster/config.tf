@@ -1,7 +1,7 @@
 resource "talos_machine_secrets" "this" {}
 
 data "talos_machine_configuration" "control_plane" {
-  for_each = local.control_plane_nodes
+  for_each = local.control_plane_node_configs
 
   cluster_endpoint   = "https://${local.master_endpoint}:6443"
   cluster_name       = var.cluster_name
@@ -15,7 +15,7 @@ data "talos_machine_configuration" "control_plane" {
 }
 
 data "talos_machine_configuration" "worker" {
-  for_each = local.worker_nodes
+  for_each = local.worker_node_configs
 
   cluster_endpoint   = "https://${local.master_endpoint}:6443"
   cluster_name       = var.cluster_name
@@ -36,7 +36,7 @@ data "talos_client_configuration" "this" {
 }
 
 resource "talos_machine_configuration_apply" "control_plane" {
-  for_each = local.control_plane_nodes
+  for_each = local.control_plane_node_configs
 
   client_configuration        = talos_machine_secrets.this.client_configuration
   machine_configuration_input = data.talos_machine_configuration.control_plane[each.key].machine_configuration
@@ -44,7 +44,7 @@ resource "talos_machine_configuration_apply" "control_plane" {
 }
 
 resource "talos_machine_configuration_apply" "worker" {
-  for_each = local.worker_nodes
+  for_each = local.worker_node_configs
 
   client_configuration        = talos_machine_secrets.this.client_configuration
   machine_configuration_input = data.talos_machine_configuration.worker[each.key].machine_configuration

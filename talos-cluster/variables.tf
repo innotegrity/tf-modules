@@ -17,16 +17,11 @@ variable "cluster_vip" {
 
 variable "control_plane_nodes" {
   type = map(object({
-    annotations = optional(map(string), {})
-    hostname    = string
-    ip_address  = string
-    labels      = optional(map(string), {})
-    extra_disks = optional(map(object({
-      device_name = string
-      format      = optional(string, "ext4")
-      name        = string
-      size        = number
-    })), {})
+    annotations     = optional(map(string), {})
+    enable_longhorn = optional(bool, false)
+    hostname        = string
+    ip_address      = string
+    labels          = optional(map(string), {})
   }))
   description = "A map of control plane nodes for the cluster."
   validation {
@@ -76,16 +71,11 @@ variable "talos_version" {
 
 variable "worker_nodes" {
   type = map(object({
-    annotations = optional(map(string), {})
-    hostname    = string
-    ip_address  = string
-    labels      = optional(map(string), {})
-    extra_disks = optional(map(object({
-      device_name = string
-      format      = optional(string, "ext4")
-      name        = string
-      size        = number
-    })), {})
+    annotations     = optional(map(string), {})
+    enable_longhorn = optional(bool, false)
+    hostname        = string
+    ip_address      = string
+    labels          = optional(map(string), {})
   }))
   description = "A map of worker nodes for the cluster."
   validation {

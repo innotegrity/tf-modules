@@ -9,8 +9,10 @@
 - [➡️ Inputs](#️-inputs)
 - [⬅️ Outputs](#️-outputs)
 - [📖 Custom Object Definitions](#-custom-object-definitions)
+  - [BootDiskObject Type](#bootdiskobject-type)
   - [DHCPObject Type](#dhcpobject-type)
-  - [DiskObject Type](#diskobject-type)
+  - [ExtraDiskObject Type](#extradiskobject-type)
+  - [LonghornDiskObject Type](#longhorndiskobject-type)
 
 ## 👁️ Overview
 
@@ -38,6 +40,7 @@ The input variables for this module are defined below.
 
 | Variable | Type | Description |
 | --- | --- | --- |
+| `boot_disk` | [BootDiskObject](#bootdiskobject-type) | Configuration for the VM's boot disk -- note that this disk is mounted as `scsi0` |
 | `hostname` | `string` | Name to use for the VM and for any DHCP reservations |
 | `network_bridge` | `string` | The name of the network interface / bridge to use for the VM |
 | `proxmox_node` | `string` | The name of the Proxmox node to use when deploying the VM |
@@ -51,9 +54,9 @@ _<u>Optional Values</u>_
 | `cluster_role` | `string` | The role of the node within the Talos cluster ; must be one of: `control-plane` or `worker` | `worker` |
 | `cpu_cores` | `number` | The number of CPU cores to allocate to the VM | `4` for control plane nodes and `8` for worker nodes |
 | `dhcp` | [DHCPObject](#dhcpobject-type) | DHCP reservation settings for the VM or `null` to disable DHCP reservation | `null` |
-| `disk_cache_mode` | `string` | Cache mode of the root disk - must be one of the following: `none`,`directsync`, `writethrough`, `writeback`, or `unsafe` | `none` |
-| `disk_size` | `number` | Size of the root disk in GB | `50` for control plane nodes and `100` for worker nodes |
-| `extra_disks` | `map(`[DiskObject](#diskobject-type)`)` | Extra disks to add to the VM with the device name (eg: `scsi1` ) as the map key | `{}` |
+| `enable_longhorn` | `bool` | Whether or not to add an extra disk for use with Longhorn for storage | `false` |
+| `extra_disks` | `list(`[ExtraDiskObject](#extradiskobject-type)`)` | Extra disks to add to the VM | `[]` |
+| `longhorn_disk` | [LonghornDiskObject](#longhorndiskobject-type) | If `enable_longhorn` is true, specify the configuration for the extra disk that will be added for use with it -- note that this disk is mounted as `scsi1` | `null` |
 | `memory` | `number` | The amount of memory (in GB) to allocate to the VM | `8` for control plane nodes and `32` for worker nodes |
 | `proxmox_pool` | `string` | The name of the pool to add the Proxmox node to after it is created or `null` to not add it to any pool | `null` |
 | `vm_id` | `number` | The unique ID to use for the VM or `null` to use the next available ID. | `null` |
@@ -70,6 +73,24 @@ This module produces the following outputs:
 | `vm_name` | `string` | Name of the newly created virtual machine |
 
 ## 📖 Custom Object Definitions
+
+### BootDiskObject Type
+
+This is an input object used to define the configuration for the boot disk to add to the VM.
+
+**<u>Required Values</u>**
+
+| Variable | Type | Description |
+| --- | --- | --- |
+| `storage_pool` | `string` | The name/ID of the storage device/pool in which to place the disk |
+
+_<u>Optional Values</u>_
+
+| Variable | Type | Description | Default |
+| --- | --- | --- | --- |
+| `size` | `number` | Size of the disk in GB | `50` for control plane nodes, `100` for worker nodes |
+| `cache_mode` | `string` | Cache mode of the disk - must be one of the following: `none`,`directsync`, `writethrough`, `writeback`, or `unsafe` | `none` |
+| `ssd` | `bool` | Whether or not to treat the disk as an SSD | `false` |
 
 ### DHCPObject Type
 
@@ -90,14 +111,15 @@ _<u>Optional Values</u>_
 | `mac_address_prefix` | `list(number)` | When generating a random MAC address, use these numbers to create its prefix | `[02, 01, 01]` |
 | `reserve_hostname` | `bool` | Whether or not to also create a DNS hostname reservation for the IP address | `false` |
 
-### DiskObject Type
+### ExtraDiskObject Type
 
-This is an input object used to define the configuration for an extra disk to add to the VM.
+This is an input object used to define the configuration for extra disks to add to the VM.
 
 **<u>Required Values</u>**
 
 | Variable | Type | Description |
 | --- | --- | --- |
+| `interface` | `string` | The interface to use for the extra disk -- must start with `scsi` (eg: `scsi2`) and may not be `scsi0` since it is used by the boot disk and it may not be `scsi1` if `enable_longhorn` is `true` |
 | `size` | `number` | Size of the disk in GB |
 | `storage_pool` | `string` | The name/ID of the storage device/pool in which to place the disk |
 
@@ -105,5 +127,23 @@ _<u>Optional Values</u>_
 
 | Variable | Type | Description | Default |
 | --- | --- | --- | --- |
+| `cache_mode` | `string` | Cache mode of the disk - must be one of the following: `none`,`directsync`, `writethrough`, `writeback`, or `unsafe` | `none` |
+| `ssd` | `bool` | Whether or not to treat the disk as an SSD | `false` |
+
+### LonghornDiskObject Type
+
+This is an input object used to define the configuration for the Longhorn disk to add to the VM.
+
+**<u>Required Values</u>**
+
+| Variable | Type | Description |
+| --- | --- | --- |
+| `storage_pool` | `string` | The name/ID of the storage device/pool in which to place the disk |
+
+_<u>Optional Values</u>_
+
+| Variable | Type | Description | Default |
+| --- | --- | --- | --- |
+| `size` | `number` | Size of the disk in GB | `250` |
 | `cache_mode` | `string` | Cache mode of the disk - must be one of the following: `none`,`directsync`, `writethrough`, `writeback`, or `unsafe` | `none` |
 | `ssd` | `bool` | Whether or not to treat the disk as an SSD | `false` |

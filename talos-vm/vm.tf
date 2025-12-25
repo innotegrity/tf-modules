@@ -41,22 +41,22 @@ resource "proxmox_virtual_environment_vm" "talos_node" {
     interface    = "scsi0"
     iothread     = true
     replicate    = false
-    size         = local.disk_size
-    ssd          = true
+    size         = local.boot_disk_size
+    ssd          = var.boot_disk.ssd
   }
 
   dynamic "disk" {
-    for_each = var.extra_disks
+    for_each = local.extra_disks
     content {
       cache        = disk.value.cache_mode
       datastore_id = disk.value.storage_pool
       discard      = "on"
       file_format  = "raw"
-      interface    = disk.key
+      interface    = disk.value.interface
       iothread     = true
       replicate    = false
       size         = disk.value.size
-      ssd          = true
+      ssd          = disk.value.ssd
     }
   }
 
