@@ -163,7 +163,6 @@ locals {
     ip_address = config.ip_address
     hostname   = config.hostname
     patches = flatten([
-      local.vip_patch,
       local.dns_forwarding_patch,
       local.install_image_patch,
       local.oidc_patch,
