@@ -57,7 +57,7 @@ variable "storage_classes" {
     extra_parameters = optional(map(string), {})
     mount_options    = optional(list(string), [])
   }))
-  description = "Storage classes to add to the Kubernetes cluster where the key is used as the storage class name."
+  description = "Storage classes to add to the Kubernetes cluster."
   validation {
     condition     = alltrue([for class, obj in var.storage_classes : contains(["Delete", "Retain"], obj.reclaim_policy) ? true : false])
     error_message = "'reclaim_policy' must be one of 'Delete' or 'Retain'."

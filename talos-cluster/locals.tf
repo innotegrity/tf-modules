@@ -40,7 +40,7 @@ locals {
       filesystem = {
         type = "ext4"
       }
-    }) : ""
+    }) : null
   }
   longhorn_kubectl_patch = { for node, config in merge(var.control_plane_nodes, var.worker_nodes) : node =>
     config.enable_longhorn ? yamlencode({
@@ -56,7 +56,7 @@ locals {
           ]
         }
       }
-    }) : ""
+    }) : null
   }
   vip_disabled_patch = yamlencode({
     machine = {
@@ -146,7 +146,7 @@ locals {
   control_plane_node_configs = { for node, config in var.control_plane_nodes : node => {
     ip_address = config.ip_address
     hostname   = config.hostname
-    patches = flatten([
+    patches = compact([
       local.vip_patch,
       local.dns_forwarding_patch,
       local.install_image_patch,
@@ -162,7 +162,7 @@ locals {
   worker_node_configs = { for node, config in var.worker_nodes : node => {
     ip_address = config.ip_address
     hostname   = config.hostname
-    patches = flatten([
+    patches = compact([
       local.dns_forwarding_patch,
       local.install_image_patch,
       local.oidc_patch,
