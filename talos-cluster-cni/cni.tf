@@ -63,7 +63,7 @@ resource "helm_release" "cilium_cni" {
     },
     {
       name  = "gatewayAPI.gatewayClass.create"
-      type  = string
+      type  = "string"
       value = "true"
     },
     {
