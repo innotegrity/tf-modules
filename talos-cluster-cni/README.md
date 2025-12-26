@@ -14,7 +14,7 @@
 
 ## 👁️ Overview
 
-This module installs and configures Cilium as the Talos Cluster CNI provider.
+This module installs and configures Cilium as the Talos Cluster CNI provider and enables its ingress and the Kubernetes Gateway APIs, allowing you to create Gateway resources in your k8s cluster.
 
 ## ✅ Provider Requirements
 
