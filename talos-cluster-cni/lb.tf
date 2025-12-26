@@ -3,8 +3,7 @@ resource "kubernetes_manifest" "cilium_l2_announcement_policy" {
     apiVersion = "cilium.io/v2alpha1"
     kind       = "CiliumL2AnnouncementPolicy"
     metadata = {
-      name      = "default-l2-announcement-policy"
-      namespace = "kube-system"
+      name = "default-l2-announcement-policy"
     }
     spec = {
       externalIPs     = true
