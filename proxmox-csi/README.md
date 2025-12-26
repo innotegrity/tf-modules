@@ -40,6 +40,7 @@ _<u>Optional Values</u>_
 | Variable | Type | Description | Default |
 | --- | --- | --- | --- |
 | `namespace` | `string` | The name of the namespace to create for the CSI driver resources | `proxmox-csi` |
+| `proxmox_csi_helm_version` | `string` | Version of the Helm chart to use to install the Proxmox CSI driver | `0.5.3` |
 | `proxmox_port` | `number` | The port on which the Proxmox API is listening | `8006` |
 | `proxmox_skip_verify_tls` | `bool` | Whether or not to skip the process of validating the certificate used by the Proxmox API server | `false` |
 | `storage_classess` | `list(`[StorageClassObject](#storageclassobject-type)`)` | List of storage classes to create automatically during installation | `[]` |

@@ -23,6 +23,12 @@ variable "proxmox_cluster" {
   description = "The name of the Proxmox cluster."
 }
 
+variable "proxmox_csi_helm_version" {
+  type        = string
+  description = "Version of the Helm chart to use for installing the Proxmox CSI driver."
+  default     = "0.5.3"
+}
+
 variable "proxmox_host" {
   type        = string
   description = "The hostname or IP address of the Proxmox server."

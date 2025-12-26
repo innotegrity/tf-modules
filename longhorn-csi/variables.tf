@@ -1,3 +1,9 @@
+variable "longhorn_csi_helm_version" {
+  type        = string
+  description = "Version of the Helm chart to use for installing the Longhorn CSI driver."
+  default     = "1.10.1"
+}
+
 variable "namespace" {
   type        = string
   description = "The name of the namespace to create for the CSI driver resources."

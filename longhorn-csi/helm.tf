@@ -23,7 +23,7 @@ resource "helm_release" "longhorn_csi" {
   create_namespace = false
   namespace        = var.namespace
 
-  version = "1.10.1"
+  version = var.longhorn_csi_helm_version
 
   values = [yamlencode(local.helm_values)]
 }

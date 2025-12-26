@@ -39,6 +39,7 @@ _<u>Optional Values</u>_
 
 | Variable | Type | Description | Default |
 | --- | --- | --- | --- |
+| `longhorn_csi_helm_version` | `string` | Version of the Helm chart to use to install the Longhorn CSI driver | `1.10.1` |
 | `namespace` | `string` | The name of the namespace to create for the CSI driver resources | `longhorn-system` |
 | `storage_classess` | `list(`[StorageClassObject](#storageclassobject-type)`)` | List of additional storage classes to create automatically during installation | `[]` |
 

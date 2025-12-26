@@ -5,7 +5,19 @@ data "talos_client_configuration" "this" {
   endpoints            = var.endpoints
 }
 
+data "http" "gateway_crds" {
+  url = local.gateway_crds_url
+}
+
+resource "kubernetes_manifest" "gateway_crds" {
+  manifest = local.gateway_crds_manifest
+}
+
 resource "helm_release" "cilium_cni" {
+  depends_on = [
+    kubernetes_manifest.gateway_crds
+  ]
+
   repository = "https://helm.cilium.io"
   chart      = "cilium"
   name       = "cilium-cni"
@@ -14,7 +26,7 @@ resource "helm_release" "cilium_cni" {
   cleanup_on_fail  = true
   create_namespace = true
   namespace        = "kube-system"
-  version          = "1.18.5"
+  version          = var.cilium_helm_version
 
   set = [
     {

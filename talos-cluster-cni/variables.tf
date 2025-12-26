@@ -1,3 +1,9 @@
+variable "cilium_helm_version" {
+  type        = string
+  description = "Version of Helm chart to use to install Cilium CNI."
+  default     = "1.18.5"
+}
+
 variable "cluster_name" {
   type        = string
   description = "Name of the Talos cluster."
@@ -21,6 +27,18 @@ variable "control_plane_nodes" {
 variable "endpoints" {
   type        = list(string)
   description = "List of endpoint IP addresses to use to check the cluster health."
+}
+
+variable "gateway_crds_experimental" {
+  type        = bool
+  description = "Whether or not to install the experimental version of Gateway CRDs."
+  default     = true
+}
+
+variable "gateway_crds_version" {
+  type        = string
+  description = "Version of Gateway CRDs to install."
+  default     = "1.41"
 }
 
 variable "load_balancer_ip_blocks" {

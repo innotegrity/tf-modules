@@ -23,7 +23,7 @@ resource "helm_release" "proxmox_csi" {
   create_namespace = false
   namespace        = var.namespace
 
-  version = "0.5.3"
+  version = var.proxmox_csi_helm_version
 
   values = [yamlencode(local.values)]
 }
