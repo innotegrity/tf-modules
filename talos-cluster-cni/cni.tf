@@ -10,7 +10,9 @@ data "http" "gateway_crds" {
 }
 
 resource "kubernetes_manifest" "gateway_crds" {
-  manifest = local.gateway_crds_manifest
+  count = length(local.gateway_crds_manifests)
+
+  manifest = local.gateway_crds_manifests[count.index]
 }
 
 resource "helm_release" "cilium_cni" {
