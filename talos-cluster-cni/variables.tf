@@ -38,7 +38,7 @@ variable "gateway_crds_experimental" {
 variable "gateway_crds_version" {
   type        = string
   description = "Version of Gateway CRDs to install."
-  default     = "1.41"
+  default     = "1.4.1"
 }
 
 variable "load_balancer_ip_blocks" {

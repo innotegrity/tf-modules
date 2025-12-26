@@ -5,6 +5,8 @@ locals {
     for doc in local.gateway_crds_docs : try(yamldecode(doc), {})
   ]
   gateway_crds_manifests = [
-    for doc in local.gateway_crds_decoded_docs : doc if length(doc) > 0
+    for doc in local.gateway_crds_decoded_docs : {
+      for k, v in doc : k => v if k != "status"
+    } if length(doc) > 0
   ]
 }
