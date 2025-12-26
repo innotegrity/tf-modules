@@ -63,7 +63,7 @@ resource "helm_release" "cilium_cni" {
     },
     {
       name  = "gatewayAPI.gatewayClass.create"
-      value = true
+      value = "true"
     },
     {
       name  = "l2announcements.enabled"
